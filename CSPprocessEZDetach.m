@@ -1,9 +1,12 @@
 %First, load paths
 CSPloadPaths
 
+%Set timezone
+timezone = 'AEST';
+
+
 %Read files in directory
-%EZdir = 'C:\Users\z2273773\OneDrive - UNSW\RESEARCH2\CoastSnap\EZDetach';
-EZdir = 'D:\OneDrive - UNSW\RESEARCH2\CoastSnap\EZDetach';
+EZdir = 'C:\Users\z2273773\OneDrive - UNSW\RESEARCH2\CoastSnap\EZDetach';
 files1 = dir([EZdir filesep '*.jpg']);files2 = dir([EZdir filesep '*.jpeg']);
 files = [files1; files2];
 dbfile = fullfile([DB_path filesep 'CoastSnapDB.xlsx']);
@@ -13,8 +16,8 @@ lastrow = length(data)+1; %Last row where data exists in the CoastSnapDB
 %Get lat lon of sites
 lats = NaN(length(files),1);
 lons = NaN(length(files),1);
-sites = {'manly','nthnarra','blacksmiths','byron'};
-UTM = {'56 H','56 H','56 H','56 J'};
+sites = {'manly','nthnarra','blacksmiths','byron','tomakin','broulee'};
+UTM = {'56 H','56 H','56 H','56 J','56 H','56 H'};
 sitelat = NaN(length(sites),1);
 sitelon = NaN(length(sites),1);
 for i = 1:length(sites)
@@ -26,13 +29,15 @@ end
 distthresh = 0.05;
 for i = 1:length(files)
     lastrow = lastrow+1;
-    fname = files(i).name;
+    fname = files(i).name
     C = strsplit(fname,'_');
     exif = imfinfo(fullfile(EZdir,fname));
     if isfield(exif,'DateTime') %If there is Exif data on the capture time
         time = datenum(exif.DateTime,'yyyy:mm:dd HH:MM:SS');
+        timequality = 1; %Trust the exif data
     else
-        time = datenum(C{2},'yyyymmddHHMM');
+        time = datenum(C{2},'yyyymmddHHMM'); %Time email was sent
+        timequality = 2; %Have less trust in time coming from email time sent
     end
     user = C{3};
     subject = C{4};
@@ -40,7 +45,12 @@ for i = 1:length(files)
     user = C2{1};
     if isfield(exif,'GPSInfo')
         if isfield(exif.GPSInfo,'GPSLatitude')
-            lats = dms2degrees(exif.GPSInfo.GPSLatitude);
+            lat = exif.GPSInfo.GPSLatitude;
+            if lat(3)==60
+                lat(2) = lat(2)+1;
+                lat(3) = 0;
+            end
+            lats = dms2degrees(lat);
             lons = dms2degrees(exif.GPSInfo.GPSLongitude);
             dists = sqrt((-lats-sitelat).^2+(lons-sitelon).^2);
             I = find(dists<distthresh);
@@ -64,6 +74,10 @@ for i = 1:length(files)
         thissite = 'byron';
     elseif ~isempty(strfind(lower(subject),'black'))
         thissite = 'blacksmiths';
+    elseif ~isempty(strfind(lower(subject),'broulee'))
+        thissite = 'broulee';
+    elseif ~isempty(strfind(lower(subject),'tomakin'))
+        thissite = 'tomakin';
     end
     
     
@@ -80,8 +94,6 @@ for i = 1:length(files)
     %Update DB and move file
     startcell = ['A' num2str(lastrow)];
     imtype = 'Snap'; %Assume it is a snap
-    timezone = 'AEST';
-    timequality = 1;
     filename = files(i).name;
     filename = strrep(filename,'jpeg','jpg'); %Change file extension to jpg
     newdata = {thissite,user, datestr(time,'dd/mm/yyyy HH:MM'),timezone,filename,'Email',imtype,timequality};

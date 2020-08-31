@@ -36,6 +36,7 @@ set(handles.plan_image,'Visible','off');%Hide axis of plan image
 
 %Check if image has already been rectified and shoreline mapped
 rect_path = strrep(pname,'Processed','Rectified');
+rect_path = strrep(rect_path,'Registered','Rectified'); %For Registered images
 rect_name = strrep(fname,'snap','plan'); %Rectified is called plan to keep with Argus conventions
 rect_name = strrep(rect_name,'timex','plan'); %For timex images
 if exist(fullfile(rect_path,rect_name),'file')
@@ -50,11 +51,15 @@ if exist(fullfile(rect_path,rect_name),'file')
     data_plan.ygrid = ygrid;
     data_plan.Iplan = Iplan;
     data_plan.metadata = metadata;
+    axes(handles.oblq_image) %Plot to oblq image axis
+    gcp_handle_oblq = plot(metadata.gcps.UVpicked(:,1),metadata.gcps.UVpicked(:,2),'go','markerfacecolor', 'g', 'markersize', 3);
+    data.gcp_handle_oblq = gcp_handle_oblq;
     set(handles.plan_image,'UserData',data_plan) %Store rectified info in userdata of plan_image
 end
 imdata = CSPparseFilename(fname);
 sldir = fullfile(shoreline_path,imdata.site,imdata.year);
 sl_fname = strrep(fname,'snap','shoreline');
+sl_fname = strrep(sl_fname,'timex','shoreline'); %To deal with timex images as well
 sl_fname = strrep(sl_fname,'.jpg','.mat');
 if exist(fullfile(sldir,sl_fname),'file')
     load(fullfile(sldir,sl_fname));
@@ -82,7 +87,12 @@ disp(['Tide level of image is ' num2str(tideZ,'%0.2f') ' m'])
 if nargin==1 %Only reset this if user is loading a new image
     disp('Finding all images within tidal tolerance...')
     tide_tol = str2num(get(handles.tidetolerance,'String')); %Tolerance to find images of similar tide levels (default 0.2m)
-    [epochs_im,im_files,im_paths,im_tides]=CSPgetImageList(data.site,'Processed');
+    if contains(imdata.user,'_registered')
+       type = 'Registered';
+    else
+        type = 'Processed';
+    end
+    [epochs_im,im_files,im_paths,im_tides]=CSPgetImageList(data.site,type);
     Iim = find(im_tides>(tideZ-tide_tol)&im_tides<(tideZ+tide_tol)); %find images within a similar tide level according to
     navepochs = epochs_im(Iim); %epochs of images within tidal tolerance of loaded image
     [navepochs,Iunique] = unique(navepochs); %Just in case there are two of the same images in the database
@@ -102,9 +112,3 @@ end
 
 %Send data to handle
 set(handles.oblq_image,'UserData',data);
-
-
-
-
-
-

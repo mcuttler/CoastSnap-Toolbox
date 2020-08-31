@@ -2,13 +2,15 @@ function out = CSPGrectifyImage(handles)
 
 data = get(handles.oblq_image,'UserData'); %Get data stored in the userdata in the oblq_image handles
 siteDB = data.siteDB;
-gcp_list = CSPgetGCPcombo(siteDB,data.epoch);
+%gcp_list = CSPgetGCPcombo(siteDB,data.epoch);
+gcp_list = siteDB.gcp_combo;
 I = data.I;
 axes(handles.oblq_image) %Plot gpcs on GUI axis
 
 %First, check if image has already been rectified
 fileparts = CSPparseFilename(data.fname);
 rect_path = strrep(data.pname,'Processed','Rectified');
+rect_path = strrep(rect_path,'Registered','Rectified'); %For Registered images
 rect_name = strrep(data.fname,'snap','plan'); %Rectified is called plan to keep with Argus conventions
 rect_name = strrep(rect_name,'timex','plan'); %For timex images
 go = 1;
@@ -80,6 +82,9 @@ if go==1 %If hasn't been previously rectified
     % click on gcps (if not using old metadata)
     for i = 1: nGcps
         title((['GCP ' num2str(i) ' of ' num2str(nGcps) ': Digitize ' gcp(i).name]));
+           % Let the mouse around and see the values.
+                hPixelInfo = impixelinfo();
+                set(hPixelInfo, 'Unit', 'Normalized', 'Position', [.45 .96 .2 .1]);
         % you can zoom with your mouse and when your image is okay, you press any key
         zoom on;
         pause()
@@ -95,12 +100,13 @@ if go==1 %If hasn't been previously rectified
     options.TolX = 1e-12;
     
     %find optimum focal length based on trial values
-    fx_mid = interp1([5:5:50000],[5:5:50000],815/960*inputs.cameraRes(1),'nearest'); %Range of trial focal length values depending on image resolution. May need to be modified in the future
-    if inputs.cameraRes(1)> 1200 %For larger images
-        fx = fx_mid-800:5:fx_mid+800;
-    else
-        fx = fx_mid-400:5:fx_mid+400;
-    end
+    HFOV_min = siteDB.rect.FOVlims(1); %From DB
+    HFOV_max = siteDB.rect.FOVlims(2);%From DB
+    fx_max = 0.5*inputs.cameraRes(1)/tan(HFOV_min*pi/360); %From Eq. 4 in Harley et al. (2019)
+    fx_min = 0.5*inputs.cameraRes(1)/tan(HFOV_max*pi/360); %From Eq. 4 in Harley et al. (2019)
+    fx_min = interp1([5:5:500000],[5:5:500000],fx_min,'nearest');
+    fx_max = interp1([5:5:500000],[5:5:500000],fx_max,'nearest');
+    fx = fx_min:5:fx_max;
     
     %Loop through trial values
     wb = waitbar(0,'Optimising camera focal length for image rectification....');
@@ -120,7 +126,8 @@ if go==1 %If hasn't been previously rectified
     
     %Find optimum focal length based on minimum MSE
     [MSEmin,Imin] = min(MSEall);
-    disp(['Min RMSE of ' num2str(sqrt(MSEmin)) ' found for fx = ' num2str(fx(Imin))])
+    FOVmin = rad2deg(2*atan(inputs.cameraRes(1)/(2*fx(Imin))));
+    disp(['Min RMSE of ' num2str(sqrt(MSEmin)) ' pixels found for FOV = ' num2str(FOVmin,'%0.1f') ' deg'])
     
     globs.lcp.fx = fx(Imin);
     globs.lcp.fy = fx(Imin);
@@ -144,7 +151,7 @@ if go==1 %If hasn't been previously rectified
     
     MSE = mse;
     RMSE = sqrt(MSE);
-    title(sprintf('RMSE = %.2f pixels', RMSE));
+    title(sprintf('RMSE = %.2f pixels, FOV = %0.1f degs', RMSE,FOVmin));
     
     % Save meta structure (if not already there)
     meta.gcpList = 1:nGcps;
@@ -188,7 +195,7 @@ if go==1 %If hasn't been previously rectified
     metadata.geom.knowns = globs.knowns;
     
     if RMSE > 10
-        msgbox(['RMSE is large (' num2str(RMSE,'%0.1f') 'm). Consider rectifying your image again. tor educe the error'])
+        msgbox(['RMSE might be too large (' num2str(RMSE,'%0.1f') 'pixels) and hence result was not saved. Consider rectifying your image again. tor educe the error'])
     else
         %Save data to file
         imwrite(flipud(Iplan),fullfile(rect_path,rect_name))
@@ -204,6 +211,5 @@ if go==1 %If hasn't been previously rectified
     data2.Iplan = Iplan;
     data2.metadata = metadata;
     set(handles.plan_image,'UserData',data2) %Store rectified info in userdata of plan_image
-    
-    %Save rectified image to file
+   
 end
