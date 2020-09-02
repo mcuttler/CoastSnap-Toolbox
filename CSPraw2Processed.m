@@ -8,6 +8,10 @@ function CSPraw2Processed(site)
 %Created by Mitch Harley
 %1/2/2018
 
+%Modified by M Cuttler (UWA)
+%01/09/2020
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 %First, load paths
 CSPloadPaths
 
@@ -32,7 +36,8 @@ imtimesGMT(Ialternative) = imtimesGMT(Ialternative)-siteDB.timezone.alternative.
 
 %Read through images found in Raw file
 imagedir = [image_path filesep site filesep 'Raw' filesep];
-images = dir([imagedir '*.jpg']);
+%search for both .jpg and .jpeg
+images = [dir([imagedir '*.jpg']); dir([imagedir '*.jpeg'])]; 
 lastrow = length(data)+1; %Last row where data exists in the CoastSnapDB
 
 %Loop through images in Raw data directory
