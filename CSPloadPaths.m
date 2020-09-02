@@ -6,7 +6,7 @@
 
 %Load various paths
 
-base_path = 'C:\Users\z2273773\Google Drive\CoastSnap\';
+base_path = 'C:\Users\00084142\Dropbox\Research\Active_Projects\CUTTLER_CoastSnapWA\CoastSnap\';
 
 DB_path = fullfile(base_path,'Database'); %Path where database is located
 image_path = fullfile(base_path,'Images'); %Path where all images are stored
