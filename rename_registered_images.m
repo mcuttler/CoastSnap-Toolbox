@@ -14,7 +14,7 @@ for i = 1:size(dum,1);
     if dum(i).name(1) == '_'
         name_out = dum(i).name(7:end-4); 
         filein = [dum(i).folder '\' dum(i).name];
-        fileout = [dum(i).folder '\' name_out]
+        fileout = [dum(i).folder '\' name_out];
         %make new file
         copyfile(filein, fileout); 
         %delete file
