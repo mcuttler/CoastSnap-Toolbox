@@ -1,9 +1,8 @@
 %% modify metadata for registered mapping
 
-function [] = modify_rectified_metadata(site); 
+function [] = modify_rectified_metadata(site, rect_path); 
 
-for i = 1:length(site)
-    rect_path = ['C:\Users\00084142\Dropbox\Research\Active_Projects\CUTTLER_CoastSnapWA\CoastSnap\Images\' site{i} '\Rectified\2020']; 
+for i = 1:length(site)   
     dum = dir(rect_path); dum = dum(3:end); 
     
     for j =1 :length(dum); 
