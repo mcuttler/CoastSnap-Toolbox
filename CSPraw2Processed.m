@@ -32,7 +32,8 @@ imtimesGMT(Ialternative) = imtimesGMT(Ialternative)-siteDB.timezone.alternative.
 
 %Read through images found in Raw file
 imagedir = [image_path filesep site filesep 'Raw' filesep];
-images = dir([imagedir '*.jpg']);
+%include JPG and JPEG extensions 
+images = [dir([imagedir '*.jpg']); dir([imagedir '*.jpeg'])]; 
 lastrow = length(data)+1; %Last row where data exists in the CoastSnapDB
 
 %Loop through images in Raw data directory
