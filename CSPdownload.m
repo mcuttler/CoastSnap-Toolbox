@@ -40,9 +40,9 @@ for i = 1:size(data,1)
     
     %determine timestampe of image
     if isdatetime(data.CoastSnaps_Post_Date(i))
-        outfile = [site '_' datestr(data.CoastSnaps_Post_Date(i),'yyyymmdd_HHMMSS') data.AmazonS3{i}(100:end)]; 
+        outfile = [siteDB '_' datestr(data.CoastSnaps_Post_Date(i),'yyyymmdd_HHMMSS') data.AmazonS3{i}(100:end)]; 
     else
-        outfile = [site '_NoDateInfo' data.AmazonS3{i}(100:end)]; 
+        outfile = [siteDB '_NoDateInfo' data.AmazonS3{i}(100:end)]; 
     end
     
     websave([raw_path '\' outfile],aws_url); 
