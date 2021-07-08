@@ -6,27 +6,22 @@
 
 %% Get user data on where GitHub paths (needed for CSPsetPaths.m) and base path for CoastSnap directory (images, shorelines, etc.)
 clear; clc; 
-prompt = {'Enter full path for location of CoastSnap toolboxes'; 'Enter full path for location of CoastSnap image database'};
+prompt = {'Enter full path for location of CoastSnapWA repository'}; 
 dlgtitle = 'Input';
 dims = [1 100];
-definput = {'G:\CUTTLER_GitHub','C:\Users\00084142\Dropbox\Research\Active_Projects\CUTTLER_CoastSnapWA\CoastSnap'};
+definput = {'F:\Active_Projects\CUTTLER_CoastSnapWA\CoastSnapWA\Data\CoastSnapWA_LGs'};
 answer = inputdlg(prompt,dlgtitle,dims,definput);
 
-github_path = answer{1,:};
-base_path = answer{2,:}; 
 
-% h = waitbar(0, 'Settings paths for CoastSnap workflow'); 
-CSPsetPaths; 
-% waitbar(5/10,h); 
-CSPloadPaths; 
-% waitbar(10/10, h); 
-% close(h); 
+base_path = answer{1,:}; 
+github_path = [base_path '\Code\GitHub']; 
 
 clear prompt dlgtitle dims definput answer
 
 %% run CSP download
 %get site names
-sites = dir([base_path '\Images']);
+image_path = [base_path '\Images']; 
+sites = dir(image_path); 
 sites = sites(3:end); 
 %clean up
 idx = []; 
@@ -44,11 +39,16 @@ for i = 1:size(idx,1)
 end
 
 clear sites idx dname
-for i = 1:size(sites,1)    
+
+%now download images
+
+for i = 1:size(siteDB,1)
+    disp(['Downloading images for ' siteDB{i} '...']); 
     CSPdownload(site{i}, siteDB{i}, base_path, image_path);
 end
+disp('Finished downloading'); 
+f = msgbox('CSP STEP 1 COMPLETE - All CoastSnap images downloaded');
 
-f = msgbox('All CoastSnap images downloaded');
 
 
 

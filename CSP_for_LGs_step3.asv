@@ -1,0 +1,53 @@
+%% CSP_for_LGs - step 3
+
+% This script collects user information required for running CSP workflows as an executable. 
+
+% Step 3 is for making timelapse GIF 
+
+%M Cuttler - July 2021clear; clc; 
+%%
+prompt = {'Enter full path for location of CoastSnapWA repository';
+    'Enter timelapse start date (YYYY-MM-DD)'; 'Enter timelapse end date (YYYY-MM-DD)'; 
+    'Enter site name as appears in CoastSnapWA database'; 'Enter normal site name'};
+dlgtitle = 'Input';
+dims = [1 100];
+definput = {'F:\Active_Projects\CUTTLER_CoastSnapWA\CoastSnapWA\Data\CoastSnapWA_LGs';
+    datestr(now,'yyyy-mm-dd');
+    datestr(now,'yyyy-mm-dd');
+    'bussojetty';'Busselton Jetty'};
+answer = inputdlg(prompt,dlgtitle,dims,definput);
+
+base_path = answer{1,:}; 
+time_start = answer{2,:};
+time_end = answer{3,:}; 
+sites_db = answer{4,:}; 
+sites = answer{5,:}; 
+
+github_path = [base_path '\Code\GitHub']; 
+
+clear prompt dlgtitle dims definput answer
+
+%% create pop up dialogue window to make sure user has created registered images
+quest = ['You are about to create a timelapse produce for ' sites ' ' 10 '- do you have Registered images for this site?'];     
+qmenu = 'Timelapse video creation'; 
+answer = questdlg(quest, qmenu, 'Yes','No','Yes'); 
+	
+if strcmp(answer,'Yes')
+    %first renam
+    for i = 1:size(sitesDB,1)    
+        CSP_plot_registered_gif(sites, sites_db, base_path, time_start, time_end)
+    end
+    
+    disp('Finished making timelapse!');
+    f = msgbox('CSP STEP 3 COMPLETE - All CoastSnap timelapse created!');
+    
+else
+    disp(['Please add reigstered images to ' sites_db ' registered folder']); 
+    f = msgbox(['CSP STEP 3 ERROR : Please add reigstered images to ' sites_db ' registered folder']); 
+    
+end
+
+
+
+
+
