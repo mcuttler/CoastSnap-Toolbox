@@ -15,12 +15,12 @@ tend = datenum(time_end,'yyyy-mm-dd');
 tend_vec = datevec(tend); 
 %check if same years 
 if tend_vec(1)==tstart_vec(1)
-    impath = [base_path '\Images\' sites_db{j} '\Registered\' num2str(tstart_vec(1))]; 
+    impath = [base_path '\Images\' sites_db '\Registered\' num2str(tstart_vec(1))]; 
     dum = dir(impath);
     dum = dum(3:end); 
 else
-    impath = [base_path '\Images\' sites_db{j} '\Registered\' num2str(tstart_vec(1))];
-    impath2 = [base_path '\Images\' sites_db{j} '\Registered\' num2str(tend_vec(1))]; 
+    impath = [base_path '\Images\' sites_db '\Registered\' num2str(tstart_vec(1))];
+    impath2 = [base_path '\Images\' sites_db '\Registered\' num2str(tend_vec(1))]; 
     dum = dir(impath);        
     dum = dum(3:end); 
     dum2 = dir(impath2); 
@@ -29,7 +29,7 @@ else
     dum = [dum; dum2]; 
 end
 
-%now rename 
+%now rename
 for i = 1:size(dum,1)
     if dum(i).name(1) == '_'
         name_out = dum(i).name(7:end-4); 
@@ -41,5 +41,6 @@ for i = 1:size(dum,1)
         delete(filein)
     end
 end
+
 
 end
