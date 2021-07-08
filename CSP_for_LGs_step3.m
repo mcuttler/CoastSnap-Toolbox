@@ -28,27 +28,26 @@ github_path = [base_path '\Code\GitHub'];
 clear prompt dlgtitle dims definput answer
 
 %% create pop up dialogue window to make sure user has created registered images
-quest = ['You are about to create a timelapse produce for ' sites ' ' 10 '- do you have Registered images for this site?'];     
+quest = ['You are about to create a timelapse video for ' sites ' ' 10 '- do you have Registered images for this site?'];     
 qmenu = 'Timelapse video creation'; 
 answer = questdlg(quest, qmenu, 'Yes','No','Yes'); 
 	
 if strcmp(answer,'Yes')
     %first rename the images to remove extra text from Photoshop
-    for i = 1:size(sitesDB,1)
-        
-    end
-    for i = 1:size(sitesDB,1)    
+    for i = 1:size(sites_db,1)       
+        CSP_rename_registered_images(sites_db, base_path, time_start, time_end)        
+    end    
+    %now create GIF
+    for i = 1:size(sites_db,1)    
         CSP_plot_registered_gif(sites, sites_db, base_path, time_start, time_end)
-    end
-    
+    end    
     disp('Finished making timelapse!');
-    f = msgbox('CSP STEP 3 COMPLETE - All CoastSnap timelapse created!');
-    
+    f = msgbox('CSP STEP 3 COMPLETE - All CoastSnap timelapse created!');    
 else
     disp(['Please add reigstered images to ' sites_db ' registered folder']); 
-    f = msgbox(['CSP STEP 3 ERROR : Please add reigstered images to ' sites_db ' registered folder']); 
-    
+    f = msgbox(['CSP STEP 3 ERROR : Please add reigstered images to ' sites_db ' registered folder']);     
 end
+
 
 
 
