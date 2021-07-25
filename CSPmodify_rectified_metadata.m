@@ -1,6 +1,6 @@
 %% modify metadata for registered mapping
 
-function [] = modify_rectified_metadata(site, rect_path); 
+function [] = CSPmodify_rectified_metadata(site, rect_path); 
 
 for i = 1:length(site)   
     dum = dir(rect_path); dum = dum(3:end); 
