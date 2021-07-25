@@ -3,9 +3,6 @@
 %%
 function [] = CSP_plot_registered_gif(sites, sites_db, base_path, time_start, time_end)
 
-addpath('C:\Users\00084142\Dropbox\matlab\MCuttler\File_exchange')
-
-
 %convert time_start from string to date
 tstart = datenum(time_start,'yyyy-mm-dd'); 
 tstart_vec= datevec(tstart); 

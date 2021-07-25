@@ -12,6 +12,7 @@ function [] = CSPdownload(site, siteDB, base_path, image_path);
 raw_path = [image_path '\' siteDB '\Raw']; 
 db_path = [base_path '\Database']; 
 tfirst = datevec(datenum(2020,7,1)); 
+tnow = datevec(now); 
 processed_path = [image_path '\' siteDB '\Processed\' num2str(tnow(1))]; 
 
 %check to see if files exist in processed path, if they do use last time
