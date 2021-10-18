@@ -9,14 +9,14 @@ sitesDB = {'binningup';'bussojetty';'dalyellup';'eaton';'koombanabay';'prestonbe
 
 for s = 1:length(sitesDB)
     dd = importdata(fullfile(image_path,sitesDB{s},'aws_name.txt')); 
-    site{s,1} = dd{:};
+    sites{s,1} = dd{:};
 end
 
     
 %% download imagery
 
 
-for s = 1:length(sitesDB)
-    disp(si
-    CSPdownload(site{s},sitesDB{s},base_path, image_path); 
+for s = 6:length(sitesDB)
+    disp(['Downloading images for ' sitesDB{s}]); 
+    CSPdownload(sites{s},sitesDB{s},base_path, image_path); 
 end
