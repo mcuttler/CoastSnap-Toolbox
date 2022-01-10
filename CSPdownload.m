@@ -18,12 +18,22 @@ processed_path = [image_path '\' siteDB '\Processed\' num2str(tnow(1))];
 %check to see if files exist in processed path, if they do use last time
 %stamp as starting point. otherwise, use first time point for any
 %CoastSnapWA site (July 2020). 
-
 dd = dir(processed_path); 
-if ~isempty(dd)
-    tstart = str2num(dd(end).name(1:10));
+if size(dd,1)==2 %empty
+    %try using previous year as may be start of new year 
+    processed_path2 = [image_path '\' siteDB '\Processed\' num2str(tnow(1)-1)]; 
+    if exist(processed_path2) 
+        dd2 = dir(processed_path2); 
+        if size(dd2,1)==2
+            tstart = posixtime(datetime(tfirst)); 
+        else
+            tstart = str2num(dd2(end).name(1:10)); 
+        end
+    else
+        tstart = posixtime(datetime(tfirst));
+    end
 else
-    tstart = posixtime(datetime(tfirst)); 
+    tstart = str2num(dd(end).name(1:10));
 end
 
 %read CSV from website with images after tstart
