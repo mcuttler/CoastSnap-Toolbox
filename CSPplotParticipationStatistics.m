@@ -1,8 +1,9 @@
-function CSPplotParticipationStatistics(site,startdate,enddate)
+function CSPplotParticipationStatistics(site,startdate,enddate,rootID)
 
 %Find path of DB file
 CSPloadPaths
 dbfile = fullfile([DB_path filesep 'CoastSnapDB.xlsx']);
+exportfile = fullfile([DB_path filesep 'spotteron_export.xlsx']); %File exported from spotteron db, converted to Excel first
 [data,txt] = xlsread(dbfile,'database');
 siteDB = CSPreadSiteDB(site); %Read metadata
 
@@ -21,19 +22,24 @@ Ialternative = find(strcmp(txt(2:end,4),siteDB.timezone.alternative.name)); %e.g
 imtimesGMT(Ialternative) = imtimesGMT(Ialternative)-siteDB.timezone.alternative.gmt_offset/24; %Subtract the offset in hours to convert to default
 imtimesLocal = imtimesGMT+siteDB.timezone.gmt_offset/24;
 
+% %Get images coming from App not listed in DB
+% [epochtimes,filenames,~,~] = CSPgetImageList(site,'Processed');
+% I = NaN(length(epochtimes),1);
+% for i = 1:length(epochtimes)
+%     Iapp = strfind(filenames(i).name,'+'); %If taken by app, filename has a + in it instead of AEST
+%     if isempty(Iapp)
+%         I(i) = 0;
+%     else
+%         I(i) = 1;
+%     end
+% end
+% Iapp = find(I==1);
+% apptimes = CSPepoch2LocalMatlab(epochtimes(Iapp),siteDB.timezone.gmt_offset);
 %Get images coming from App not listed in DB
-[epochtimes,filenames,~,~] = CSPgetImageList(site,'Processed');
-I = NaN(length(epochtimes),1);
-for i = 1:length(epochtimes)
-    Iapp = strfind(filenames(i).name,'+'); %If taken by app, filename has a + in it instead of AEST
-    if isempty(Iapp)
-        I(i) = 0;
-    else
-        I(i) = 1;
-    end
-end
-Iapp = find(I==1);
-apptimes = CSPepoch2LocalMatlab(epochtimes(Iapp),siteDB.timezone.gmt_offset);
+
+[data1,txt1] = xlsread(exportfile);
+Iroot = find(data1(:,2)==rootID); %RootID is 2nd column in export file
+apptimes=datenum(char(txt1{Iroot+1,12}),'dd/mm/yyyy HH:MM:SS AM');
 
 dd = startdate:enddate;
 for i = 1:length(dd)
@@ -86,7 +92,7 @@ h1(6).FontSize = 10;
 if length(h1)>=8
     h1(8).FontSize = 10;
 end
-h = legend(subtypes,'Location','southoutside')%,'Orientation','horizontal');
+h = legend(subtypes,'Location','southoutside');%,'Orientation','horizontal');
 h.FontSize = 10;
 title(h,'Submission type');
 %title('Image submission type')
@@ -98,5 +104,6 @@ disp(['Most popular day of week is ' num2str(mode(weekday(imtimesLocal(J))))])
 disp(['Most popular time of day is ' num2str(mode(M(:,4)))])
 disp(['Total number of submissions is ' num2str(cN(end))])
 disp(['Average number of submissions per week is ' num2str(7*cN(end)/((1+(enddate-startdate))),'%0.1f')])
+
 
 
