@@ -16,7 +16,7 @@ end
 %% download imagery
 
 
-for s = 6:length(sitesDB)
+for s = 1:length(sitesDB)
     disp(['Downloading images for ' sitesDB{s}]); 
     CSPdownload(sites{s},sitesDB{s},base_path, image_path); 
 end
