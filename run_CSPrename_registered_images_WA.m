@@ -6,9 +6,13 @@ sites = {'binningup','bussojetty','dalyellup','eaton','koombanabay','shoalwater'
 CSPloadPaths;
 
 for i = 1:length(sites)
-    t = datevec(now); 
-    reg_path = [image_path '\' sites{i} '\Registered\' num2str(t(1))]; 
-    CSPrename_registered_images(reg_path); 
+    %list paths
+    dyrs = dir( [image_path '\' sites{i} '\Registered']); 
+    dyrs = dyrs(3:end); 
+    for j = 1:size(dyrs,1)        
+        reg_path = [image_path '\' sites{i} '\Registered\' dyrs(j).name]; 
+        CSPrename_registered_images(reg_path); 
+    end
 end
 
 

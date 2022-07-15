@@ -38,7 +38,8 @@ end
 
 %read CSV from website with images after tstart
 url = ['http://wacoastline.org/wac-api/images/site/' site '_upload/from/' num2str(tstart) '/dum.csv']; 
-data = webread(url); 
+options = weboptions('Timeout',120); 
+data = webread(url,options); 
 
 %now loop through and download to local 
 aws_base = 'http://s3-ap-southeast-2.amazonaws.com/'; 
@@ -58,9 +59,17 @@ for i = 1:size(data,1)
         
         %determine timestampe of image
         if isdatetime(data.CoastSnaps_Post_Date(i))
-            outfile = [siteDB '_' datestr(data.CoastSnaps_Post_Date(i),'yyyymmdd_HHMMSS') data.AmazonS3{i}(100:end)]; 
+            if strcmp(data.AmazonS3{i}(end-4:end),'.jpeg')
+                outfile = [siteDB '_' datestr(data.CoastSnaps_Post_Date(i),'yyyymmdd_HHMMSS') data.AmazonS3{i}(end-4:end)]; 
+            else
+                outfile = [siteDB '_' datestr(data.CoastSnaps_Post_Date(i),'yyyymmdd_HHMMSS') data.AmazonS3{i}(end-3:end)]; 
+            end
         else
-            outfile = [siteDB '_NoDateInfo' data.AmazonS3{i}(100:end)];
+            if strcmp(data.AmazonS3{i}(end-4:end),'.jpeg')
+                outfile = [siteDB '__NoDateInfo' data.AmazonS3{i}(end-4:end)]; 
+            else
+                outfile = [siteDB '__NoDateInfo' data.AmazonS3{i}(end-3:end)]; 
+            end            
         end
         
         websave([raw_path '\' outfile],aws_url);
@@ -80,7 +89,3 @@ tablename = [db_path '\' siteDB '_users.csv'];
 writetable(csvout, tablename); 
 
 end
-
-
-
-
