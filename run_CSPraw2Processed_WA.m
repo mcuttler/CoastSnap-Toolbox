@@ -1,5 +1,4 @@
 %% Convert raw imagery for CoastSnapWA to processed
-clear; clc; 
 sites = {'binningup','bussojetty','dalyellup','eaton','koombanabay','shoalwater','prestonbeach','silversands'};
 
 CSPsetPaths; 
