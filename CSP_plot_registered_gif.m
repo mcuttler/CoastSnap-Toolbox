@@ -32,7 +32,8 @@ if ~exist(outpath)
     mkdir(outpath)
 end
 
-%loop over images to make GIF
+%loop over images to make GIF - add something in to only clip to times of
+%interest 
 [m,~] = size(dum);        
 for i = 1:m
     im_time = datetime(str2num(dum(i).name(1:10)), 'convertfrom','posixtime')+datenum(0,0,0,8,0,0);
