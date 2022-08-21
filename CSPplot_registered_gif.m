@@ -5,7 +5,7 @@
 %%
 function [] = CSPplot_registered_gif(image_path, site, site_db,tstart, tend)
 
-addpath('C:\Users\00084142\Dropbox\matlab\MCuttler\File_exchange')
+% addpath('C:\Users\00084142\Dropbox\matlab\MCuttler\File_exchange')
 t1 = datevec(tstart); 
 t2 = datevec(tend); 
 if t1(1)==t2(1)

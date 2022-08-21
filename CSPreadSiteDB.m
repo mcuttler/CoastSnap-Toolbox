@@ -13,7 +13,7 @@ function out = CSPreadSiteDB(site)
 %1/2/2018
 
 %Find path of DB file
-CSPloadPaths
+% CSPloadPaths
 dbfile = fullfile([DB_path filesep 'CoastSnapDB.xlsx']);
 
 %Read xlsx file at sheet corresponding to site of interest
