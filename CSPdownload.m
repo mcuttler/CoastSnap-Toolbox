@@ -47,39 +47,77 @@ author_name = [];
 im_filename = []; 
 
 for i = 1:size(data,1)
-    try
-        %remove '-scaled' from file name if it exists     
-        s3name = data.AmazonS3{i}; 
-        patt = '-scaled';
-        if contains(s3name,patt)
-            s3name = erase(s3name,patt); 
-        end
-        
-        aws_url = [aws_base s3name];
-        
-        %determine timestampe of image
-        if isdatetime(data.CoastSnaps_Post_Date(i))
-            if strcmp(data.AmazonS3{i}(end-4:end),'.jpeg')
-                outfile = [siteDB '_' datestr(data.CoastSnaps_Post_Date(i),'yyyymmdd_HHMMSS') data.AmazonS3{i}(end-4:end)]; 
+    %sometimes data structure is weird
+    if any(strcmp(data.Properties.VariableNames,'Var1'))
+        try
+            cdum = split(data.Var1(i),','); 
+            s3name = cdum{1}; 
+            patt = '-scaled';
+            if contains(s3name,patt)
+                s3name = erase(s3name,patt); 
+            end        
+            aws_url = [aws_base s3name];
+  
+            %timestamp
+            if length(cdum{4}(2:end))==13
+                dt = [cdum{4}(2:end) ':' num2str(data.Var2(i)) ':' data.Var3{i}(1:2)];
+                CoastSnaps_Post_Date = datenum(dt,'yyyy-mm-dd HH:MM:SS'); 
+                if strcmp(s3name(end-4:end),'.jpeg')
+                    outfile = [siteDB '_' datestr(CoastSnaps_Post_Date,'yyyymmdd_HHMMSS') s3name(end-4:end)]; 
+                else
+                    outfile = [siteDB '_' datestr(CoastSnaps_Post_Date,'yyyymmdd_HHMMSS') s3name(end-3:end)]; 
+                end
             else
-                outfile = [siteDB '_' datestr(data.CoastSnaps_Post_Date(i),'yyyymmdd_HHMMSS') data.AmazonS3{i}(end-3:end)]; 
+                if strcmp(s3name(end-4:end),'.jpeg')
+                    outfile = [siteDB '__NoDateInfo' s3name(end-4:end)]; 
+                else
+                    outfile = [siteDB '__NoDateInfo' s3name(end-3:end)]; 
+                end            
             end
-        else
-            if strcmp(data.AmazonS3{i}(end-4:end),'.jpeg')
-                outfile = [siteDB '__NoDateInfo' data.AmazonS3{i}(end-4:end)]; 
-            else
-                outfile = [siteDB '__NoDateInfo' data.AmazonS3{i}(end-3:end)]; 
-            end            
+            websave([raw_path '\' outfile],aws_url);
+            
+            %save filename and author for CoastSnapDB
+            author_name = [author_name; cdum(3)]; 
+            im_filename = [im_filename; {outfile}]; 
+        catch
+            author_name = [author_name; 'could not read file'];
+            im_filename = [im_filename; 'check AWS for this site']; 
         end
-        
-        websave([raw_path '\' outfile],aws_url);
-        
-        %save filename and author for CoastSnapDB
-        author_name = [author_name; data.Author(i)]; 
-        im_filename = [im_filename; {outfile}]; 
-    catch
-        author_name = [author_name; 'could not read file'];
-        im_filename = [im_filename; 'check AWS for this site']; 
+    else
+        try
+            %remove '-scaled' from file name if it exists     
+            s3name = data.AmazonS3{i}; 
+            patt = '-scaled';
+            if contains(s3name,patt)
+                s3name = erase(s3name,patt); 
+            end
+            
+            aws_url = [aws_base s3name];
+            
+            %determine timestamp of image
+            if isdatetime(data.CoastSnaps_Post_Date(i))
+                if strcmp(data.AmazonS3{i}(end-4:end),'.jpeg')
+                    outfile = [siteDB '_' datestr(data.CoastSnaps_Post_Date(i),'yyyymmdd_HHMMSS') data.AmazonS3{i}(end-4:end)]; 
+                else
+                    outfile = [siteDB '_' datestr(data.CoastSnaps_Post_Date(i),'yyyymmdd_HHMMSS') data.AmazonS3{i}(end-3:end)]; 
+                end
+            else
+                if strcmp(data.AmazonS3{i}(end-4:end),'.jpeg')
+                    outfile = [siteDB '__NoDateInfo' data.AmazonS3{i}(end-4:end)]; 
+                else
+                    outfile = [siteDB '__NoDateInfo' data.AmazonS3{i}(end-3:end)]; 
+                end            
+            end
+            
+            websave([raw_path '\' outfile],aws_url);
+            
+            %save filename and author for CoastSnapDB
+            author_name = [author_name; data.Author(i)]; 
+            im_filename = [im_filename; {outfile}]; 
+        catch
+            author_name = [author_name; 'could not read file'];
+            im_filename = [im_filename; 'check AWS for this site']; 
+        end
     end
 end
 

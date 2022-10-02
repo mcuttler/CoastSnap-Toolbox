@@ -13,7 +13,7 @@ function CSPraw2Processed(site)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %First, load paths
-% CSPloadPaths
+CSPloadPaths
 
 %First find path of DB Excel file and read database
 siteDB = CSPreadSiteDB(site); %Read metadata
