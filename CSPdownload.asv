@@ -41,9 +41,7 @@ url = ['http://wacoastline.org/wac-api/images/site/' site '_upload/from/' num2st
 options = weboptions('Timeout',180); 
 data = webread(url,options); 
 
-websave('G:\dum.csv',url); 
-test = readtable('G:\dum.csv'); 
-
+websave('G:\
 %now loop through and download to local 
 aws_base = 'http://s3-ap-southeast-2.amazonaws.com/'; 
 author_name = []; 
