@@ -6,7 +6,7 @@
 
 %Load various paths
 
-base_path = 'G:\Active_Projects\CUTTLER_CoastSnapWA\CoastSnap\';
+base_path = 'P:\CUTTLER_CoastSnapWA\CoastSnap\';
 
 DB_path = fullfile(base_path,'Database'); %Path where database is located
 image_path = fullfile(base_path,'Images'); %Path where all images are stored
