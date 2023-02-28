@@ -41,6 +41,9 @@ url = ['http://wacoastline.org/wac-api/images/site/' site '_upload/from/' num2st
 options = weboptions('Timeout',180); 
 data = webread(url,options); 
 
+% websave(fullfile(DB_path,'dum.csv'),url); 
+% test = readtable(fullfile(DB_path,'dum.csv')); 
+
 %now loop through and download to local 
 aws_base = 'http://s3-ap-southeast-2.amazonaws.com/'; 
 author_name = []; 
@@ -116,7 +119,7 @@ for i = 1:size(data,1)
                 end
             end
 
-            %determine timestamp 
+            %figure out user name
             if ~isempty(data.Author{i}) %if Artist has data then timestamp is in Author
                 dtime = [data.Author{i}(1:4) data.Author{i}(6:7) data.Author{i}(9:10) '_' data.Author{i}(12:13) data.Author{i}(15:16) data.Author{i}(18:19)]; 
                 if strcmp(data.AmazonS3{i}(end-4:end),'.jpeg')

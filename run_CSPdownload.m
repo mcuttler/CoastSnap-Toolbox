@@ -18,5 +18,5 @@ end
 
 for s = 1:length(sitesDB)
     disp(['Downloading images for ' sitesDB{s}]); 
-    CSPdownload(sites{s},sitesDB{s},base_path, image_path); 
+    CSPdownload_v2(sites{s},sitesDB{s},base_path, image_path); 
 end
