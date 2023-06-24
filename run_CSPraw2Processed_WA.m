@@ -6,7 +6,6 @@ CSPloadPaths;
 
 disp('paths set, processing raw images'); 
 for i = 1:length(sites)
-
     CSPraw2Processed(sites{i});
 end
 
