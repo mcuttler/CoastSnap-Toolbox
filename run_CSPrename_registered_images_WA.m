@@ -2,10 +2,10 @@
 
 sites = {'binningup','bussojetty','dalyellup','eaton','koombanabay','shoalwater','prestonbeach','silversands'};
 
-% CSPsetPaths; 
+CSPsetPaths; 
 CSPloadPaths;
 
-for i = 1:length(sites)
+for i = 1:length(sites)    
     %list paths
     dyrs = dir( [image_path '\' sites{i} '\Registered']); 
     dyrs = dyrs(3:end); 
