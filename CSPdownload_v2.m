@@ -13,32 +13,40 @@ raw_path = [image_path '\' siteDB '\Raw'];
 db_path = [base_path '\Database']; 
 tfirst = datevec(datenum(2020,7,1)); 
 tnow = datevec(now); 
-processed_path = [image_path '\' siteDB '\Processed\' num2str(tnow(1))]; 
+% processed_path = [image_path '\' siteDB '\Processed\' num2str(tnow(1))]; 
+
+%get list of all processed images
+dd = dir(fullfile(image_path,siteDB,'Processed','**\*.jpg')); 
+tstart = str2num(dd(end).name(1:10));
 
 %check to see if files exist in processed path, if they do use last time
 %stamp as starting point. otherwise, use first time point for any
 %CoastSnapWA site (July 2020). 
-dd = dir(processed_path); 
-if size(dd,1)==2 %empty
-    %try using previous year as may be start of new year 
-    processed_path2 = [image_path '\' siteDB '\Processed\' num2str(tnow(1)-1)]; 
-    if exist(processed_path2) 
-        dd2 = dir(processed_path2); 
-        if size(dd2,1)==2
-            tstart = posixtime(datetime(tfirst)); 
-        else
-            tstart = str2num(dd2(end).name(1:10)); 
-        end
-    else
-        tstart = posixtime(datetime(tfirst));
-    end
-else
-    tstart = str2num(dd(end).name(1:10));
-end
+
+% dd = dir(processed_path); 
+% if size(dd,1)==2 %empty
+%     %try using previous year as may be start of new year 
+%     processed_path2 = [image_path '\' siteDB '\Processed\' num2str(tnow(1)-1)]; 
+%     if exist(processed_path2) 
+%         dd2 = dir(processed_path2); 
+%         if size(dd2,1)==2
+%             tstart = posixtime(datetime(tfirst)); 
+%         else
+%             tstart = str2num(dd2(end).name(1:10)); 
+%         end
+%     else
+%         tstart = posixtime(datetime(tfirst));
+%     end
+% else
+%       tstart = str2num(dd(end).name(1:10));
+% end
+
+
 
 %read CSV from website with images after tstart
 url = ['http://wacoastline.org/wac-api/images/site/' site '_upload/from/' num2str(tstart) '/dum.csv']; 
-options = weboptions('Timeout',180); 
+options = weboptions('Timeout',300); 
+
 %this step is a little annoying (saving and then re-reading), but works
 %better
 websave(fullfile(db_path,[site '_download.csv']),url,options); 
