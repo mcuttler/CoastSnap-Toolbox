@@ -5,7 +5,8 @@ CSPsetPaths;
 CSPloadPaths;
 
 %databse names
-sitesDB = {'binningup';'bussojetty';'dalyellup';'eaton';'koombanabay';'prestonbeach';'shoalwater';'silversands'};
+% sitesDB = {'binningup';'bussojetty';'dalyellup';'eaton';'koombanabay';'prestonbeach';'shoalwater';'silversands'};
+sitesDB = {'shoalwater';'silversands'};
 
 for s = 1:length(sitesDB)
     dd = importdata(fullfile(image_path,sitesDB{s},'aws_name.txt')); 
@@ -18,5 +19,10 @@ end
 
 for s = 1:length(sitesDB)
     disp(['Downloading images for ' sitesDB{s}]); 
-    CSPdownload_v2(sites{s},sitesDB{s},base_path, image_path); 
+    try
+        CSPdownload_v2(sites{s},sitesDB{s},base_path, image_path); 
+    catch
+        disp(['could not download anything for : ' sitesDB{s}]); 
+    end
+
 end
